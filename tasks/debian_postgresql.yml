@@ -1,0 +1,67 @@
+---
+# tasks file for postgresql
+
+- name: postgresql | add GPG signing key
+  become: true
+  apt_key:
+    url: "https://www.postgresql.org/media/keys/ACCC4CF8.asc"
+    state: present
+    validate_certs: true
+  notify: update cache
+  tags: install
+
+- name: postgresql | add official repository
+  become: true
+  apt_repository:
+    repo: "deb http://apt.postgresql.org/pub/repos/apt/ buster-pgdg main"
+    state: present
+    filename: pgdg
+  notify: update cache
+  tags: install
+
+- name: postgresql | establish dependencies
+  become: true
+  apt:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ debian_postgresql_dependencies }}"
+  tags: install
+
+- name: postgresql | ensure the PostgreSQL service is running and enabled
+  become: true
+  service:
+    name: postgresql
+    state: started
+    enabled: true
+  tags:
+    - install
+    - configure
+
+- name: postgresql | ensure database exists
+  block:
+    - name: postgresql | list all databases
+      become: true
+      become_user: "{{ debian_postgresql_database_user }}"
+      shell: 'psql -c "select datname from pg_database;" | tail +3 | head -n -2'
+      register: pg_databases
+      changed_when: false
+      tags: configure
+
+    - name: postgresql | create database "{{ debian_postgresql_database_name }}"
+      when: debian_postgresql_database_name not in pg_databases.stdout
+      become: true
+      become_user: "{{ debian_postgresql_database_user }}"
+      postgresql_db:
+        name: "{{ debian_postgresql_database_name }}"
+        owner: "{{ debian_postgresql_database_user }}"
+        state: present
+      tags: configure
+
+- name: postgresql | configure password for postgres user
+  become: true
+  become_user: "{{ debian_postgresql_database_user }}"
+  postgresql_user:
+    name: "{{ debian_postgresql_database_user }}"
+    password: "{{ debian_postgresql_database_password }}"
+    state: present
+  tags: configure

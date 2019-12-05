@@ -1,0 +1,76 @@
+---
+
+scenario:
+  name: default
+  create_sequence:
+    - dependency
+    - create
+    - prepare
+  check_sequence:
+    - dependency
+    - cleanup
+    - destroy
+    - create
+    - prepare
+    - converge
+    - check
+    - destroy
+  converge_sequence:
+    - dependency
+    - create
+    - prepare
+    - converge
+  destroy_sequence:
+    - dependency
+    - cleanup
+    - destroy
+  test_sequence:
+    - lint
+    - dependency
+    - cleanup
+    - destroy
+    - syntax
+    - create
+    - prepare
+    - converge
+    - idempotence
+    - side_effect
+    - verify
+    - cleanup
+    - destroy
+driver:
+  name: lxd
+lint:
+  name: yamllint
+platforms:
+  - name: instance-postgresql
+    source:
+      type: image
+      mode: pull
+      server: https://images.linuxcontainers.org
+      protocol: simplestreams
+      alias: debian/buster/amd64
+    architecture: x86_64
+    config:
+      limits.cpu: "2"
+    devices:
+      kvm:
+        path: /dev/kvm
+        type: unix-char
+    profiles:
+      - default
+    force_stop: false
+    wait_for_ipv4_addresses: true
+    timeout: 60
+provisioner:
+  name: ansible
+  lint:
+    name: ansible-lint
+  inventory:
+    group_vars:
+      all:
+        ansible_python_interpreter: /usr/bin/python3
+verifier:
+  name: testinfra
+  lint:
+    name: flake8

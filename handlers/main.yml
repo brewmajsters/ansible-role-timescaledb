@@ -1,0 +1,7 @@
+---
+
+- name: update cache
+  become: true
+  apt:
+    update_cache: true
+  tags: install

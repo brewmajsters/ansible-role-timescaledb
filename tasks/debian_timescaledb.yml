@@ -1,0 +1,59 @@
+---
+# tasks file for timescaledb
+
+- name: timescaledb | add GPG signing key
+  become: true
+  apt_key:
+    url: "https://packagecloud.io/timescale/timescaledb/gpgkey"
+    state: present
+    validate_certs: true
+  notify: update cache
+  tags: install
+
+- name: timescaledb | add official repository
+  become: true
+  apt_repository:
+    repo: "deb https://packagecloud.io/timescale/timescaledb/debian/ buster main"
+    state: present
+    filename: timescaledb
+  notify: update cache
+  tags: install
+
+- name: timescaledb | establish dependencies
+  become: true
+  apt:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ debian_timescaledb_dependencies }}"
+  tags: install
+
+- name: timescaledb | check if timescaledb is already configured
+  become: true
+  become_user: "{{ debian_postgresql_database_user }}"
+  shell: |
+    set -o pipefail
+    psql -d {{ debian_postgresql_database_name }} -c "select extname from pg_extension;" | tail +3 | head -n -2
+  args:
+    executable: /bin/bash
+  register: pg_extensions
+  changed_when: false
+  tags: configure
+
+- when: "'timescaledb' not in pg_extensions.stdout"
+  block:
+    - name: timescaledb | configure timescaledb in 'postgresql.conf'
+      become: true
+      command: "timescaledb-tune --quiet --yes >> /etc/postgresql/11/main/postgresql.conf"
+      tags: configure
+
+    - name: timescaledb | restart postgresql
+      become: true
+      service:
+        name: postgresql
+        state: restarted
+
+    - name: timescaledb | add timescaledb extension to postgresql database
+      become: true
+      become_user: "{{ debian_postgresql_database_user }}"
+      command: 'psql -d {{ debian_postgresql_database_name }} -c "CREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;"'
+      register: output

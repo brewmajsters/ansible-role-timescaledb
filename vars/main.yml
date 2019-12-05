@@ -1,0 +1,9 @@
+---
+# vars file for postgresql
+
+debian_postgresql_dependencies:
+  - postgresql-11
+  - postgresql-server-dev-11
+
+debian_timescaledb_dependencies:
+  - timescaledb-postgresql-11

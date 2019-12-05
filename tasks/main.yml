@@ -1,0 +1,5 @@
+---
+# tasks file for postgresql
+
+- when: ansible_os_family == 'Debian'
+  include: debian.yml

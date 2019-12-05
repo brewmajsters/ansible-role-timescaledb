@@ -1,0 +1,22 @@
+---
+
+- name: Prepare
+  hosts: all
+  gather_facts: false
+  become: true
+  vars:
+    ansible_deps:
+      - gnupg
+      - python3-psycopg2
+      - sudo
+      - ca-certificates
+  tasks:
+    - name: install python3
+      raw: "apt update && apt install -y python3"
+
+    - name: install ansible requirements
+      become: true
+      apt:
+        name: "{{ item }}"
+        state: present
+      loop: "{{ ansible_deps }}"
