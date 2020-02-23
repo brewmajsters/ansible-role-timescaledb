@@ -1,5 +1,7 @@
 # timescaledb
 
+[![Build Status](https://travis-ci.org/brewmajsters/ansible-role-timescaledb.svg?branch=master)](https://travis-ci.org/brewmajsters/ansible-role-timescaledb)
+
 Download and install postgresql database and add the TimeScaleDB extension.
 
 ## Requirements
