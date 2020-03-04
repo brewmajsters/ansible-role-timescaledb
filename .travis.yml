@@ -12,3 +12,4 @@ install:
 
 script:
   - molecule test
+  - molecule test --scenario-name timescaledb_docker

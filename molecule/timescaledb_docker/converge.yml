@@ -1,0 +1,7 @@
+---
+- name: Converge
+  hosts: all
+  roles:
+    - role: "ansible-role-timescaledb"
+      vars:
+        timescaledb_as_docker: true
