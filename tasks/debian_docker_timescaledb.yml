@@ -1,0 +1,50 @@
+---
+# source: http://www.googlinux.com/creating-docker-container-using-ansible/index.html
+
+- name: create timescaledb container
+  become: true
+  docker_container:
+    name: "{{ timescaledb_docker.name }}"
+    image: "{{ timescaledb_docker.image }}"
+    privileged: "{{ timescaledb_docker.privileged }}"
+    ports: "{{ timescaledb_docker.ports }}"
+    env: "{{ timescaledb_docker.env }}"
+    network_mode: host
+
+- name: install postgresql client
+  become: true
+  apt:
+    name: postgresql-client
+    state: present
+
+- name: install psycopg2
+  become: true
+  pip:
+    executable: pip3
+    name: psycopg2-binary
+
+- name: ensure database exists
+  become: true
+  postgresql_db:
+    login_host: "localhost"
+    name: "{{ timescaledb.database_name }}"
+    owner: "{{ timescaledb.database_owner }}"
+    state: present
+  tags: configure
+
+- name: retrieve {{ timescaledb.database_name }} database extensions
+  become: true
+  postgresql_query:
+    login_host: "localhost"
+    db: "{{ timescaledb.database_name }}"
+    query: "select extname from pg_extension"
+  register: db_extenstions
+
+- name: ensure timescaledb extension is present for database
+  become: true
+  when: "'timescaledb' not in (db_extenstions | json_query('query_result[*].extname'))"
+  postgresql_query:
+    login_host: "localhost"
+    db: "{{ timescaledb.database_name }}"
+    query: "CREATE EXTENSION IF NOT EXISTS timescaledb CASCADE"
+  tags: configure

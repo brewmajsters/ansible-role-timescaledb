@@ -1,5 +1,12 @@
 ---
 # tasks file for postgresql
 
-- when: ansible_os_family == 'Debian'
+- when:
+    - ansible_os_family == 'Debian'
+    - not timescaledb_as_docker
   include: debian.yml
+
+- when:
+    - ansible_os_family == 'Debian'
+    - timescaledb_as_docker
+  include: debian_docker_timescaledb.yml
