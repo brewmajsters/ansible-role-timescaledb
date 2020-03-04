@@ -13,6 +13,7 @@ None
     debian_postgresql_database_user: <str, postgresql username>
     debian_postgresql_database_password: <str, postgresql user password>
     debian_postgresql_database_name: <str, postgresql database to be created>
+    timescaledb_as_docker: <bool, if true, timescaledb is deployed as docker image>
 
 ## Dependencies
 
