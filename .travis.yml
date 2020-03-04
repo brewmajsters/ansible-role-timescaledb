@@ -11,5 +11,5 @@ install:
   - pip install molecule docker
 
 script:
-  - molecule test
+  # - molecule test
   - molecule test --scenario-name timescaledb_docker
