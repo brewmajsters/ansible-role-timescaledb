@@ -1,0 +1,54 @@
+---
+# tasks file for docker
+
+- name: install dependencies
+  become: true
+  package:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ docker_dependencies.packages }}"
+  tags: install
+
+- name: install pip dependencies
+  become: true
+  pip:
+    executable: pip3
+    name: "{{ item }}"
+  loop: "{{ docker_dependencies.pip_packages }}"
+
+- name: add docker GPG key
+  become: true
+  apt_key:
+    url: "https://download.docker.com/linux/ubuntu/gpg"
+  tags: install
+
+- name: add docker repo to apt sources
+  become: true
+  apt_repository:
+    repo: "deb [arch=amd64] https://download.docker.com/linux/debian {{ ansible_distribution_release }} stable"
+  register: apt_repository
+  tags: install
+
+- name: update apt cache
+  become: true
+  when: apt_repository.changed
+  apt:
+    update_cache: true
+  tags: install
+
+- name: install docker package
+  become: true
+  apt:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ docker_packages }}"
+  tags: install
+
+- name: ensure docker is started and enabled
+  become: true
+  systemd:
+    daemon_reload: true
+    name: docker
+    state: started
+    enabled: true
+  tags: install

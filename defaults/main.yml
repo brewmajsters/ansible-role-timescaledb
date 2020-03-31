@@ -2,5 +2,5 @@
 # defaults file for postgresql
 
 debian_postgresql_database_user: postgres
-debian_postgresql_database_password: postgres
-debian_postgresql_database_name: smartbrew_backend
+debian_postgresql_database_password: brewmasters
+debian_postgresql_database_name: brewmaster
