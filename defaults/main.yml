@@ -4,18 +4,3 @@
 debian_postgresql_database_user: postgres
 debian_postgresql_database_password: brewmasters
 debian_postgresql_database_name: brewmaster
-
-timescaledb_as_docker: false
-
-debian_docker_timescaledb:
-  name: "brewmaster-timescaledb"
-  image: "timescale/timescaledb:latest-pg11"
-  privileged: true
-  ports: "5432:5432"
-  env:
-    POSTGRES_PASSWORD: "{{ debian_postgresql_database_password }}"
-
-debian_timescaledb:
-  root_password: "{{ debian_docker_timescaledb.env.POSTGRES_PASSWORD }}"
-  database_name: "{{ debian_postgresql_database_name }}"
-  database_owner: "{{ debian_postgresql_database_user }}"  # include create user task

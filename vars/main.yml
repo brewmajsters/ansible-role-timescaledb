@@ -7,16 +7,3 @@ debian_postgresql_dependencies:
 
 debian_timescaledb_dependencies:
   - timescaledb-postgresql-11
-
-docker_dependencies:
-  pip_packages:
-    - docker
-  packages:
-    - gnupg2
-    - apt-transport-https
-    - ca-certificates
-    - software-properties-common
-
-docker_packages:
-  - containerd.io
-  - docker-ce
