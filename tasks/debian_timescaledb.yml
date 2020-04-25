@@ -7,7 +7,6 @@
     url: "https://packagecloud.io/timescale/timescaledb/gpgkey"
     state: present
     validate_certs: true
-  notify: update cache
   tags: install
 
 - name: timescaledb | add official repository
@@ -16,7 +15,14 @@
     repo: "deb https://packagecloud.io/timescale/timescaledb/debian/ buster main"
     state: present
     filename: timescaledb
-  notify: update cache
+  register: timescaledb_repo
+  tags: install
+
+- name: timescaledb | udpate apt cache
+  become: true
+  when: timescaledb_repo.changed
+  apt:
+    update_cache: true
   tags: install
 
 - name: timescaledb | establish dependencies

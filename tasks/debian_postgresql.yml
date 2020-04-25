@@ -7,7 +7,6 @@
     url: "https://www.postgresql.org/media/keys/ACCC4CF8.asc"
     state: present
     validate_certs: true
-  notify: update cache
   tags: install
 
 - name: postgresql | add official repository
@@ -16,7 +15,14 @@
     repo: "deb http://apt.postgresql.org/pub/repos/apt/ buster-pgdg main"
     state: present
     filename: pgdg
-  notify: update cache
+  register: postgresql_repo
+  tags: install
+
+- name: postgresql | udpate apt cache
+  become: true
+  when: postgresql_repo.changed
+  apt:
+    update_cache: true
   tags: install
 
 - name: postgresql | establish dependencies
