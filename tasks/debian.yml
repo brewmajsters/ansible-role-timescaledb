@@ -1,6 +1,0 @@
----
-# Debian specific tasks
-
-- include: "debian_postgresql.yml"
-
-- include: "debian_timescaledb.yml"

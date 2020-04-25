@@ -1,6 +1,6 @@
 ---
-# tasks file for postgresql
+# Debian specific tasks
 
-- when:
-    - ansible_os_family == 'Debian'
-  include: debian.yml
+- include: "debian_postgresql.yml"
+
+- include: "debian_timescaledb.yml"
