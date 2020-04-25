@@ -37,25 +37,14 @@
     - install
     - configure
 
-- name: postgresql | ensure database exists
-  block:
-    - name: postgresql | list all databases
-      become: true
-      become_user: "{{ debian_postgresql_database_user }}"
-      shell: 'psql -c "select datname from pg_database;" | tail +3 | head -n -2'
-      register: pg_databases
-      changed_when: false
-      tags: configure
-
-    - name: postgresql | create database "{{ debian_postgresql_database_name }}"
-      when: debian_postgresql_database_name not in pg_databases.stdout
-      become: true
-      become_user: "{{ debian_postgresql_database_user }}"
-      postgresql_db:
-        name: "{{ debian_postgresql_database_name }}"
-        owner: "{{ debian_postgresql_database_user }}"
-        state: present
-      tags: configure
+- name: postgresql | ensure database "{{ debian_postgresql_database_name }}" exists
+  become: true
+  become_user: "{{ debian_postgresql_database_user }}"
+  postgresql_db:
+    name: "{{ debian_postgresql_database_name }}"
+    owner: "{{ debian_postgresql_database_user }}"
+    state: present
+  tags: configure
 
 - name: postgresql | configure password for postgres user
   become: true
