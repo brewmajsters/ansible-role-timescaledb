@@ -1,6 +1,6 @@
 ---
-# defaults file for postgresql
+# defaults file for timescaledb
 
-debian_postgresql_database_user: postgres
-debian_postgresql_database_password: brewmasters
-debian_postgresql_database_name: brewmaster
+timescaledb_database_user: postgres
+timescaledb_database_password: brewmaster
+timescaledb_database_name: brewmaster
