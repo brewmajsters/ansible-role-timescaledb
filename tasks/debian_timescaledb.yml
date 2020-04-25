@@ -24,15 +24,15 @@
   apt:
     name: "{{ item }}"
     state: present
-  loop: "{{ debian_timescaledb_dependencies }}"
+  loop: "{{ timescaledb_dependencies }}"
   tags: install
 
 - name: timescaledb | check if timescaledb is already configured
   become: true
-  become_user: "{{ debian_postgresql_database_user }}"
+  become_user: "{{ timescaledb_database_user }}"
   shell: |
     set -o pipefail
-    psql -d {{ debian_postgresql_database_name }} -c "select extname from pg_extension;" | tail +3 | head -n -2
+    psql -d {{ timescaledb_database_name }} -c "select extname from pg_extension;" | tail +3 | head -n -2
   args:
     executable: /bin/bash
   register: pg_extensions
@@ -54,6 +54,6 @@
 
     - name: timescaledb | add timescaledb extension to postgresql database
       become: true
-      become_user: "{{ debian_postgresql_database_user }}"
-      command: 'psql -d {{ debian_postgresql_database_name }} -c "CREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;"'
+      become_user: "{{ timescaledb_database_user }}"
+      command: 'psql -d {{ timescaledb_database_name }} -c "CREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;"'
       register: output

@@ -24,7 +24,7 @@
   apt:
     name: "{{ item }}"
     state: present
-  loop: "{{ debian_postgresql_dependencies }}"
+  loop: "{{ postgresql_dependencies }}"
   tags: install
 
 - name: postgresql | ensure the PostgreSQL service is running and enabled
@@ -37,20 +37,20 @@
     - install
     - configure
 
-- name: postgresql | ensure database "{{ debian_postgresql_database_name }}" exists
+- name: postgresql | ensure database "{{ timescaledb_database_name }}" exists
   become: true
-  become_user: "{{ debian_postgresql_database_user }}"
+  become_user: "{{ timescaledb_database_user }}"
   postgresql_db:
-    name: "{{ debian_postgresql_database_name }}"
-    owner: "{{ debian_postgresql_database_user }}"
+    name: "{{ timescaledb_database_name }}"
+    owner: "{{ timescaledb_database_user }}"
     state: present
   tags: configure
 
 - name: postgresql | configure password for postgres user
   become: true
-  become_user: "{{ debian_postgresql_database_user }}"
+  become_user: "{{ timescaledb_database_user }}"
   postgresql_user:
-    name: "{{ debian_postgresql_database_user }}"
-    password: "{{ debian_postgresql_database_password }}"
+    name: "{{ timescaledb_database_user }}"
+    password: "{{ timescaledb_database_password }}"
     state: present
   tags: configure
